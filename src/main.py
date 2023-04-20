@@ -124,6 +124,8 @@ def check_response_time():
             # If the flag is not set, sleep for 1 second
             time.sleep(1)
 
+# Axe Endpoint
+@app.route('/axe')
 
 if __name__ == '__main__':
     # Start check_response_time() function as a separate thread
