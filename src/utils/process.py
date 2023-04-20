@@ -1,8 +1,11 @@
 import json
+import os
 import requests
+from threading import Event
 from utils.watch import logger
 from data.update import get_uppies
 
+stop_event = Event()
 
 def roll_uppies():
     batch_size = 10
@@ -17,7 +20,8 @@ def roll_uppies():
         logger.debug(f'Data Ready: {data}')
 
         # Send the POST request to Franklin
-        url = 'http://192.168.1.15:8500/uppies/yeet'
+        franklin_url = os.environ.get('FRANKLIN_URL')
+        url = f'{franklin_url}/uppies/yeet'
         headers = {'Content-Type': 'application/json'}
         logger.debug(f'Sending POST request to {url} with data: {data}')
         response = requests.post(url, headers=headers, json=data)
@@ -28,5 +32,8 @@ def roll_uppies():
         else:
             logger.error(f'🚀   📡 Error sending POST request: {response.status_code} - {response.reason}')
 
+        # Check if the stop_event is set and break the loop if it is
+        if stop_event.is_set():
+            break
     else:
         logger.debug('No URLs to process')

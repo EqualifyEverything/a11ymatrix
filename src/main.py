@@ -1,12 +1,11 @@
 import os
 import time
 import threading
-from multiprocessing import Event, Process
+from threading import Event
 from flask import Flask, jsonify, request
 from flask_cors import CORS
-from utils.process import roll_uppies
+from utils.process import roll_uppies, stop_event
 from utils.watch import logger
-
 
 app = Flask(__name__)
 CORS(app)
@@ -23,18 +22,21 @@ response_time = 0
 # Flag variable to indicate whether the check_response_time function should run
 run_wild = False
 
-# Create a shared event object
-stop_event = Event()
-
+# Global variable to hold the roll_uppies process object
+process_obj = None
 
 # Manage Uppies
 @app.route('/uppies/start', methods=['POST'])
 def starty_uppies():
     logger.info('Start Requested')
-    global run_wild
+    global run_wild, process_obj, stop_event
+
+    # Clear the stop_event
+    stop_event.clear()
 
     # Start roll_uppies process
-    Process(target=roll_uppies, args=(stop_event,)).start()
+    process_obj = threading.Thread(target=roll_uppies)
+    process_obj.start()
 
     # Set the flag to True
     run_wild = True
@@ -45,17 +47,17 @@ def starty_uppies():
 @app.route('/uppies/stop', methods=['POST'])
 def stopy_uppies():
     logger.info('Stop Requested')
-    global run_wild
+    global run_wild, process_obj, stop_event
 
     # Set the flag to False
     run_wild = False
 
-    # Set the stop event to signal all threads and processes to stop
-    stop_event.set()
+    # Set the stop_event
+    if process_obj is not None and process_obj.is_alive():
+        stop_event.set()
 
     # Return empty response
     return '', 200
-
 
 @app.route('/status', methods=['GET'])
 def get_status():
@@ -63,9 +65,8 @@ def get_status():
     # Return the status as a JSON object
     return jsonify({'num_workers': num_workers, 'response_time': response_time, 'delay': delay, 'run_wild': run_wild})
 
-
 def check_response_time():
-    global num_workers, delay, response_time, run_wild, stop_event
+    global num_workers, delay, response_time, run_wild
 
     while True:
         # Check if the flag is set
@@ -95,25 +96,7 @@ def check_response_time():
                 delay += 1
 
         else:
-            # If the flag is not set, set the stop event to signal all threads and processes to stop
-            stop_event.set()
-
-            # Wait for all threads and processes to stop
-            stop_event.wait()
-
-            # Reset number of workers to 1
-            num_workers = 1
-
-            # Reset delay to 1 second
-            delay = 1
-
-            # Reset response time to 0
-            response_time = 0
-
-            # Clear the stop event
-            stop_event.clear()
-
-            # Sleep for 1 second before checking the flag again
+            # If the flag is not set, sleep for 1 second
             time.sleep(1)
 
 if __name__ == '__main__':

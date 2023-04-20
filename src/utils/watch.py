@@ -1,3 +1,4 @@
+import os
 import logging
 from data.access import connection
 
@@ -10,11 +11,12 @@ logger = logging.getLogger("A11y🪵 ")
 
 # Check if logger already has handlers
 if not logger.hasHandlers():
-    logger.setLevel(logging.INFO)
+    log_level = os.environ.get('LOG_LEVEL', 'INFO')
+    logger.setLevel(logging.getLevelName(log_level))
 
     # Create console handler and set level to info
     ch = logging.StreamHandler()
-    ch.setLevel(logging.INFO)
+    ch.setLevel(logging.getLevelName(log_level))
 
     # Create formatter and add it to the handler
     formatter = logging.Formatter('%(asctime)s - %(name)s - [%(levelname)s] - %(message)s')
