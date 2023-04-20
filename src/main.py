@@ -106,6 +106,10 @@ def check_response_time():
                 worker_threads.pop()
                 stop_event.clear()
 
+            # Call sync_those_urls function every 5 minutes
+            if int(time.time()) % 300 == 0:
+                sync_those_urls(run_wild)
+
             # Sleep for delay time
             time.sleep(delay)
 

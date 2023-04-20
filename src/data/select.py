@@ -36,41 +36,18 @@ def execute_select(query, params=None, fetchone=True):
 
 
 # Queries
-def get_uppies():
+
+def sync_target_urls():
     query = """
-        UPDATE processing.uppies_urls
-        SET processed = true
-        WHERE url_id IN (
-          SELECT url_id
-          FROM processing.uppies_urls
-          WHERE processed = false
-          LIMIT 10
-        )
-        RETURNING url, url_id;
+        SELECT processing.update_uppies_at_and_code();
     """
+    execute_select(query)
+    return True
 
 
-def next_tech_url():
+def add_more_urls():
     query = """
-        SELECT url AS "target",
-               id AS "url_id"
-        FROM (
-          SELECT *
-          FROM targets.urls
-          WHERE active_main IS TRUE
-            AND active_scan_tech IS TRUE
-            AND url NOT ilike '%?%'
-          ORDER BY created_at DESC
-          LIMIT 500
-        ) AS subquery
-        OFFSET floor(random() * 100)
-        LIMIT 1;
+        SELECT processing.add_uppies_urls_to_process();
     """
-    result = execute_select(query)
-    if result:
-        target, url_id = result
-        logger.info(f'🗄️🔍 Next Tech Check URL: {target}')
-        return target, url_id
-    else:
-        logger.error(f'🗄️🔍 Unable to Tech Check URL')
-        return None, None
+    execute_select(query)
+    return True

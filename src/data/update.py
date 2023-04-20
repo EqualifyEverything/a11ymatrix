@@ -16,7 +16,7 @@ if use_pooling:
     conn_params = connection().get_connection_params()
     pool = SimpleConnectionPool(
         minconn=1,
-        maxconn=10,
+        maxconn=25,
         **conn_params
     )
 
