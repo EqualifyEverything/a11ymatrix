@@ -5,6 +5,7 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 from utils.process import roll_uppies, stop_event
 from utils.watch import logger
+from utils.housekeeping import sync_those_urls
 
 app = Flask(__name__)
 CORS(app)
@@ -90,7 +91,7 @@ def check_response_time():
             response_time = time.time() - start_time
 
             # If response time is less than 2 seconds, add one worker
-            if response_time < 2 and num_workers < 16:
+            if response_time < 2 and num_workers < 8:
                 num_workers += 1
                 logger.info(f"Increasing number of workers to {num_workers}")
                 worker_thread = threading.Thread(target=roll_uppies)
