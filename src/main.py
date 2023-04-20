@@ -63,6 +63,11 @@ def stopy_uppies():
     # Clear the worker_threads list
     worker_threads.clear()
 
+    # Reset the values
+    num_workers = 1
+    delay = 1
+    response_time = 0
+
     # Return empty response
     return '', 200
 
