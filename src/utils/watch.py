@@ -11,7 +11,7 @@ logger = logging.getLogger("A11y🪵 ")
 
 # Check if logger already has handlers
 if not logger.hasHandlers():
-    log_level = os.environ.get('LOG_LEVEL', 'INFO')
+    log_level = os.environ.get('LOG_LEVEL', 'DEBUG')
     logger.setLevel(logging.getLevelName(log_level))
 
     # Create console handler and set level to info

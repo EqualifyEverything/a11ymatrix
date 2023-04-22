@@ -1,5 +1,6 @@
 from data.access import connection
 from utils.watch import logger
+from datetime import datetime, timedelta
 
 # Log Emoji: 🗄️🔍
 
@@ -51,3 +52,27 @@ def add_more_urls():
     """
     execute_select(query)
     return True
+
+def get_axe_url():
+    query = """
+       UPDATE targets.urls t
+       SET queued_at_axe = now()
+       WHERE id IN (
+           SELECT id FROM (
+               SELECT t.id
+               FROM targets.urls t
+               INNER JOIN results.scan_uppies s ON t.id = s.url_id AND (s.content_type ILIKE 'text/html' OR s.content_type IS NULL)
+               WHERE t.active_main IS TRUE
+                   AND t.is_objective IS TRUE
+                   AND (t.uppies_code BETWEEN 100 AND 299 OR t.uppies_code IS NULL)
+                   AND (t.scanned_at_axe > now() - interval '7 days' OR t.scanned_at_axe IS NULL)
+                   AND (t.queued_at_axe IS NULL OR t.queued_at_axe < now() - interval '1 hour')
+               ORDER BY t.queued_at_axe ASC NULLS FIRST
+               LIMIT 1
+           ) subquery
+       )
+       RETURNING t.url, t.id AS url_id;
+    """
+    result = execute_select(query)
+    logger.debug(f'Selected URL: {result}')
+    return result
