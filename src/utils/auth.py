@@ -8,6 +8,6 @@ def rabbit(queue_name):
 
     # Create a channel and declare a queue
     channel = connection.channel()
-    channel.queue_declare(queue=queue_name, durable=True, arguments={'x-message-ttl': 7200000, 'x-max-length': 250, 'x-overflow': 'reject-publish'})
+    channel.queue_declare(queue=queue_name, durable=True, arguments={'x-message-ttl': 7200000})
 
     return channel, connection

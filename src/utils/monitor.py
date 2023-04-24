@@ -71,9 +71,10 @@ def rabbit_checkup():
         return False
 
 
-QUEUE_NAMES = ['urls_scan-axe-1', 'urls_scan-axe-2', 'urls_scan-axe-3', 'urls_scan-axe-4', 'urls_scan-axe-5']
+# QUEUE_NAMES = ['urls_scan-axe-1', 'urls_scan-axe-2', 'urls_scan-axe-3', 'urls_scan-axe-4', 'urls_scan-axe-5']
+QUEUE_NAMES = ['axes_for_throwing']
 
-MAX_QUEUE_SIZE = 250
+MAX_QUEUE_SIZE = 3000
 MIN_QUEUE_SIZE = 50
 SEND_RATE_INCREMENT = 0.1  # increase send rate by 10% per step
 SEND_RATE_DECREMENT = 0.05  # decrease send rate by 5% per step
