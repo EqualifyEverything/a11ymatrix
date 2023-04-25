@@ -1,10 +1,12 @@
 # 3rd Party Imports
 import os
+import pika
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import threading
 # Script Imports
 from utils.watch import logger
+from utils.auth import rabbit
 from utils.monitor import start_rabbit, stop_rabbit, whats_up_doc, rabbit_checkup
 
 
@@ -60,6 +62,35 @@ def rabbit_ears():
     # Get the current queue status
     status = whats_up_doc()
     return jsonify(status), 200
+
+
+@app.route('/rabbit/clear', methods=['POST'])
+def clear_rabbit():
+    # Get the queue name from the request body
+    queue_name = request.json.get('queue_name')
+
+    # Connect to the queue
+    channel, connection = rabbit(queue_name)
+
+    # Purge the ready queue
+    channel.queue_purge(queue=queue_name)
+
+    # Check if the unacked queue exists
+    try:
+        channel.queue_declare(queue=f"{queue_name}-unacked")
+    except pika.exceptions.ChannelClosedByBroker as e:
+        # The queue does not exist, so there is nothing to clear
+        pass
+    else:
+        # The queue exists, so purge it
+        channel.queue_purge(queue=f"{queue_name}-unacked")
+
+    # Close the connection and channel
+    channel.close()
+    connection.close()
+
+    return jsonify({'status': 'cleared'}), 200
+
 
 # End Rabbit
 

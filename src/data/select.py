@@ -58,7 +58,9 @@ def get_axe_url(batch_size=10):
     select_query = """
         SELECT t.id, t.url
         FROM targets.urls t
-        INNER JOIN results.scan_uppies s ON t.id = s.url_id AND (s.content_type ILIKE 'text/html' OR s.content_type IS NULL)
+        INNER JOIN results.scan_uppies s ON t.id = s.url_id AND (s.content_type ILIKE 'text/html'
+        --OR s.content_type IS NULL
+        )
         WHERE t.active_main IS TRUE
             AND t.is_objective IS TRUE
             AND (t.uppies_code BETWEEN 100 AND 299 OR t.uppies_code IS NULL)
