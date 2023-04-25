@@ -16,6 +16,10 @@ COPY src /app/src
 # Env Variables
 ENV APP_PORT 8087
 
+# Set up the proxy environment variables
+ENV http_proxy http://gluetun:8888
+ENV https_proxy http://gluetun:8888
+
 ENV FRANKLIN_URL http://franklin.whatever
 
 # Logging Level
@@ -24,4 +28,4 @@ ENV LOG_LEVEL INFO
 EXPOSE $APP_PORT
 
 # Run the application
-CMD ["python", "src/main.py"]
+CMD ["python", "src/endpoints.py"]
