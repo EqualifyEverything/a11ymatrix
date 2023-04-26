@@ -4,6 +4,7 @@ import pika
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import threading
+from prometheus_client import Counter, Histogram, generate_latest
 # Script Imports
 from utils.watch import logger
 from utils.auth import rabbit
@@ -120,6 +121,21 @@ def axe_status():
 def axe_health():
     # Start the Axe Processing
     logger.info('Start Requested')
+
+
+# Prometheus
+# Define metrics
+REQUESTS = Counter('requests_total', 'Total number of requests')
+LATENCY = Histogram('request_latency_seconds', 'Request latency in seconds')
+
+
+@app.route('/metrics')
+def metrics():
+    # Collect and return the metrics as a Prometheus-formatted response
+    response = Response(generate_latest(), mimetype='text/plain')
+    response.headers['Content-Type'] = 'text/plain; charset=utf-8'
+    return response
+
 
 
 if __name__ == '__main__':
