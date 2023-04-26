@@ -56,20 +56,29 @@ def add_more_urls():
 
 def get_axe_url(batch_size=10):
     select_query = """
-        SELECT t.id, t.url
-        FROM targets.urls t
-        INNER JOIN results.scan_uppies s ON t.id = s.url_id AND (s.content_type ILIKE 'text/html'
-        --OR s.content_type IS NULL
+        WITH prioritized_urls AS (
+            SELECT t.id, t.url
+            FROM targets.urls t
+            INNER JOIN results.scan_uppies s ON t.id = s.url_id
+            AND (s.content_type ILIKE 'text/html'
+                OR s.content_type IS NULL
+                )
+            WHERE t.active_main IS TRUE
+                AND t.is_objective IS TRUE
+                AND (t.uppies_code BETWEEN 100 AND 299 OR t.uppies_code IS NULL)
+                AND (t.scanned_at_axe > now() - interval '7 days' OR t.scanned_at_axe IS NULL)
+                AND (t.queued_at_axe IS NULL OR t.queued_at_axe < now() - interval '1 hour')
+            ORDER BY t.queued_at_axe ASC NULLS FIRST
+            LIMIT %s
         )
-        WHERE t.active_main IS TRUE
-            AND t.is_objective IS TRUE
-            AND (t.uppies_code BETWEEN 100 AND 299 OR t.uppies_code IS NULL)
-            AND (t.scanned_at_axe > now() - interval '7 days' OR t.scanned_at_axe IS NULL)
-            AND (t.queued_at_axe IS NULL OR t.queued_at_axe < now() - interval '1 hour')
-        ORDER BY t.queued_at_axe ASC NULLS FIRST
+        SELECT * FROM prioritized_urls
+        ORDER BY RANDOM()
         LIMIT %s;
     """
-    result = execute_select(select_query, (batch_size,), fetchone=False)  # Set fetchone to False
+    limit = batch_size * 10
+    result = execute_select(select_query, (limit, batch_size), fetchone=False)  # Set fetchone to False
     logger.debug(f'Selected URLs: {result}')
     return result
+
+
 
