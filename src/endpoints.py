@@ -1,7 +1,7 @@
 # 3rd Party Imports
 import os
 import pika
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, Response
 from flask_cors import CORS
 import threading
 from prometheus_client import Counter, Histogram, generate_latest
@@ -9,6 +9,7 @@ from prometheus_client import Counter, Histogram, generate_latest
 from utils.watch import logger
 from utils.auth import rabbit
 from utils.monitor import start_rabbit, stop_rabbit, whats_up_doc, rabbit_checkup
+from utils.yeet_uppies import start_the_uppies, stop_the_uppies
 
 
 app = Flask(__name__)
@@ -49,6 +50,23 @@ def stop_rabbits():
     return jsonify({'status': 'stopped'}), 200
 
 
+# Uppies - Start
+@app.route('/uppies/start', methods=['POST'])
+def starty_uppies():
+    # Start the RabbitMQ monitoring
+    rabbit_thread = threading.Thread(target=start_the_uppies)
+    rabbit_thread.start()
+    return jsonify({'uppies_status': 'started'}), 200
+
+
+# Uppies - Stop
+@app.route('/uppies/stop', methods=['POST'])
+def stoppy_uppies():
+    # Stop the RabbitMQ monitoring
+    stop_the_uppies()
+    return jsonify({'uppies_status': 'stopped'}), 200
+
+
 # Rabbit Monitor - Health Check
 @app.route('/rabbit/health', methods=['GET'])
 def rabbit_healthy():
@@ -81,6 +99,7 @@ def clear_rabbit():
         channel.queue_declare(queue=f"{queue_name}-unacked")
     except pika.exceptions.ChannelClosedByBroker as e:
         # The queue does not exist, so there is nothing to clear
+        logger.error(f'You got an error with pika... {e}')
         pass
     else:
         # The queue exists, so purge it
@@ -96,33 +115,6 @@ def clear_rabbit():
 # End Rabbit
 
 
-@app.route('/axe/start', methods=['POST'])
-def axe_start():
-    # Start the Axe Processing
-    logger.info('Start Requested')
-
-
-# Stop Axe Scans
-@app.route('/axe/stop', methods=['POST'])
-def axe_stop():
-    # Start the Axe Processing
-    logger.info('Start Requested')
-
-
-# Get Axe Status
-@app.route('/axe/status', methods=['GET'])
-def axe_status():
-    # Start the Axe Processing
-    logger.info('Start Requested')
-
-
-# Check Axe Health
-@app.route('/axe/health', methods=['GET'])
-def axe_health():
-    # Start the Axe Processing
-    logger.info('Start Requested')
-
-
 # Prometheus
 # Define metrics
 REQUESTS = Counter('requests_total', 'Total number of requests')
@@ -135,7 +127,6 @@ def metrics():
     response = Response(generate_latest(), mimetype='text/plain')
     response.headers['Content-Type'] = 'text/plain; charset=utf-8'
     return response
-
 
 
 if __name__ == '__main__':

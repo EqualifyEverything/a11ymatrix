@@ -17,8 +17,8 @@ COPY src /app/src
 ENV APP_PORT 8087
 
 # Set up the proxy environment variables
-ENV http_proxy http://gluetun:8888
-ENV https_proxy http://gluetun:8888
+ENV http_proxy gluetun:8888
+ENV https_proxy gluetun:8888
 
 ENV FRANKLIN_URL http://franklin.whatever
 

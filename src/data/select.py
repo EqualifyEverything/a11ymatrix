@@ -1,6 +1,6 @@
 from data.access import connection
 from utils.watch import logger
-from datetime import datetime, timedelta
+
 
 # Log Emoji: 🗄️🔍
 
@@ -54,6 +54,7 @@ def add_more_urls():
     return True
 
 
+# Select Axe URL
 def get_axe_url(batch_size=10):
     select_query = """
         WITH prioritized_urls AS (
@@ -65,9 +66,12 @@ def get_axe_url(batch_size=10):
                 )
             WHERE t.active_main IS TRUE
                 AND t.is_objective IS TRUE
-                AND (t.uppies_code BETWEEN 100 AND 299 OR t.uppies_code IS NULL)
-                AND (t.scanned_at_axe > now() - interval '7 days' OR t.scanned_at_axe IS NULL)
-                AND (t.queued_at_axe IS NULL OR t.queued_at_axe < now() - interval '1 hour')
+                AND (t.uppies_code BETWEEN 100
+                    AND 299 OR t.uppies_code IS NULL)
+                AND (t.scanned_at_axe > now() - interval '7 days'
+                OR t.scanned_at_axe IS NULL)
+                AND (t.queued_at_axe IS NULL
+                    OR t.queued_at_axe < now() - interval '1 hour')
             ORDER BY t.queued_at_axe ASC NULLS FIRST
             LIMIT %s
         )
@@ -76,9 +80,34 @@ def get_axe_url(batch_size=10):
         LIMIT %s;
     """
     limit = batch_size * 10
-    result = execute_select(select_query, (limit, batch_size), fetchone=False)  # Set fetchone to False
+    result = execute_select(
+        select_query, (limit, batch_size), fetchone=False)
     logger.debug(f'Selected URLs: {result}')
     return result
 
 
-
+# Get next Uppies URL
+def get_uppies_url(batch_size=10):
+    select_query = """
+        WITH prioritized_urls AS (
+            SELECT t.id, t.url
+            FROM targets.urls t
+            WHERE t.active_main IS TRUE
+                AND t.is_objective IS TRUE
+                AND t.active_scan_uppies IS TRUE
+                AND (t.uppies_at > now() - interval '7 days'
+                OR t.uppies_at IS NULL)
+                AND (t.queued_at_uppies IS NULL
+                    OR t.queued_at_uppies < now() - interval '1 hour')
+            ORDER BY t.queued_at_uppies ASC NULLS FIRST
+            LIMIT %s
+        )
+        SELECT * FROM prioritized_urls
+        ORDER BY RANDOM()
+        LIMIT %s;
+    """
+    limit = batch_size * 10
+    result = execute_select(
+        select_query, (limit, batch_size), fetchone=False)
+    logger.debug(f'Selected URLs: {result}')
+    return result

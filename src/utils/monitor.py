@@ -17,11 +17,12 @@ def start_rabbit():
         queue_sizes = {}
         for queue_name in QUEUE_NAMES:
             channel, connection = rabbit(queue_name)
-            queue_declare_result = channel.queue_declare(queue_name, passive=True)
+            queue_declare_result = channel.queue_declare(
+                queue_name, passive=True)
             queue_sizes[queue_name] = queue_declare_result.method.message_count
             connection.close()
 
-        # Send messages to the queues using yeet_axes()
+        # Send messages to the queues using share_uppies()
         for queue_name in QUEUE_NAMES:
             channel, connection = rabbit(queue_name)
             yeet_axes(channel, queue_name)  # add URL to queue
@@ -32,8 +33,6 @@ def start_rabbit():
 
         # Wait for some time before checking the queues again
         time.sleep(1)
-
-
 
 
 def stop_rabbit():
@@ -71,7 +70,6 @@ def rabbit_checkup():
         return False
 
 
-# QUEUE_NAMES = ['urls_scan-axe-1', 'urls_scan-axe-2', 'urls_scan-axe-3', 'urls_scan-axe-4', 'urls_scan-axe-5']
 QUEUE_NAMES = ['axes_for_throwing']
 
 MAX_QUEUE_SIZE = 3000
