@@ -70,7 +70,7 @@ def rabbit_checkup():
         return False
 
 
-QUEUE_NAMES = ['axes_for_throwing']
+QUEUE_NAMES = ['launch_axe']
 
 MAX_QUEUE_SIZE = 3000
 MIN_QUEUE_SIZE = 50

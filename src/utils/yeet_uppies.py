@@ -2,7 +2,7 @@ from utils.auth import rabbit
 from utils.watch import logger
 from send import share_uppies
 
-queue_name = 'am_i_up'
+queue_name = 'launch_uppies'
 
 
 def start_the_uppies():
