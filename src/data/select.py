@@ -38,21 +38,6 @@ def execute_select(query, params=None, fetchone=True):
 
 # Queries
 
-def sync_target_urls():
-    query = """
-        SELECT processing.update_uppies_at_and_code();
-    """
-    execute_select(query)
-    return True
-
-
-def add_more_urls():
-    query = """
-        SELECT processing.add_uppies_urls_to_process();
-    """
-    execute_select(query)
-    return True
-
 
 # Select Axe URL
 def get_axe_url(batch_size=10):
