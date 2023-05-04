@@ -3,7 +3,7 @@ import pika
 from data.select import get_axe_url, get_uppies_url
 from utils.watch import logger
 from utils.auth import rabbit
-from data.update import execute_bulk_update
+from data.update import execute_update
 
 
 # Selects and sends a single url to the queue
@@ -37,7 +37,7 @@ def yeet_axes(channel, queue_name):
                 WHERE id IN %s;
             """
             url_ids = tuple(row[0] for row in data)
-            execute_bulk_update(update_query, (url_ids,))
+            execute_update(update_query, (url_ids,))
     else:
         logger.info('No URLs found to send to the queue.')
 
@@ -72,6 +72,6 @@ def share_uppies(channel, queue_name):
                 WHERE id = %s;
             """
             url_ids = tuple(row[0] for row in data)
-            execute_bulk_update(update_query, (url_ids,))
+            execute_update(update_query, (url_ids,))
     else:
         logger.info('No URLs found to send to the Uppies queue.')
