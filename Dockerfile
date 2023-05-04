@@ -16,11 +16,13 @@ COPY src /app/src
 # Env Variables
 ENV APP_PORT 8087
 
-# Set up the proxy environment variables
-ENV http_proxy gluetun:8888
-ENV https_proxy gluetun:8888
+# Set the Database vars
+ENV DB_HOST postgres
+ENV DB_PORT 5432
+ENV DB_USER a11ydata
+ENV DB_PASSWORD a11yAllTheThings!
+ENV DB_NAME a11ydata
 
-ENV FRANKLIN_URL http://franklin.whatever
 
 # Logging Level
 ENV LOG_LEVEL INFO

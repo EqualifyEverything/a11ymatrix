@@ -131,5 +131,5 @@ def metrics():
 
 if __name__ == '__main__':
     logger.debug('Starting Endpoints')
-    app_port = int(os.environ.get('APP_PORT', 8888))
+    app_port = int(os.environ.get('APP_PORT', 8087))
     app.run(debug=True, host='0.0.0.0', port=app_port)
