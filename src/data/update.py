@@ -21,50 +21,51 @@ if use_pooling:
     )
 
 
-
 def connection_pooling():
     return pool.getconn()
+
 
 def release_pooling(conn):
     pool.putconn(conn)
 
 # Singular Updates
 
+
 def execute_update(query, params=None, fetchone=True):
- #  logger.debug(f'🗄️   🔧 Executing query: {query}')
- #  logger.debug(f'🗄️   🔧 Query parameters: {params}... ')
+    # logger.debug(f'🗄️   🔧 Executing query: {query}')
+    # logger.debug(f'🗄️   🔧 Query parameters: {params}... ')
 
-   # Connect to the database
-   conn = connection()
-   conn.open()
-   logger.debug(f'🗄️   🔧 Database connection opened')
+    # Connect to the database
+    conn = connection()
+    conn.open()
+    logger.debug('🗄️   🔧 Database connection opened')
 
-   # Create a cursor
-   cur = conn.conn.cursor()
+    # Create a cursor
+    cur = conn.conn.cursor()
 
-   try:
-      # Execute the query
-      cur.execute(query, params)
-      conn.conn.commit()
-      logger.info(f'🗄️   🔧 Query executed and committed')
+    try:
+        # Execute the query
+        cur.execute(query, params)
+        conn.conn.commit()
+        logger.info('🗄️   🔧 Query executed and committed')
 
-      # Fetch the results if requested
-      result = None
-      if fetchone:
-            result = cur.fetchone() or ()  # return an empty tuple if None is returned
-      else:
-            result = cur.fetchall() or []  # return an empty list if None is returned
+        # Fetch the results if requested
+        result = None
+        if fetchone:
+            result = cur.fetchone() or ()
+        else:
+            result = cur.fetchall() or []
             logger.debug(f'🗄️   🔧 Fetched results: {result}')
-   except Exception as e:
-      #  logger.error(f'🗄️   🔧 Error executing update query: {e}')
+    except Exception as e:
+        logger.error(f'🗄️   🔧 Error executing update query: {e}')
         result = None
 
-   # Close the cursor and connection
-   cur.close()
-   conn.close()
-   logger.debug(f'🗄️   🔧 Cursor and connection closed')
+    # Close the cursor and connection
+    cur.close()
+    conn.close()
+    logger.debug('🗄️   🔧 Cursor and connection closed')
 
-   return result
+    return result
 
 
 # # # # # # # # # #
@@ -72,34 +73,34 @@ def execute_update(query, params=None, fetchone=True):
 # Bulk Updates
 
 def execute_bulk_update(query, params_list):
-   # Connect to the database
-   if use_pooling:
-      conn = connection_pooling()
-   else:
-      conn = connection()
-      conn.open()
+    # Connect to the database
+    if use_pooling:
+        conn = connection_pooling()
+    else:
+        conn = connection()
+        conn.open()
 
-   # Create a cursor
-   cur = conn.cursor()
+    # Create a cursor
+    cur = conn.cursor()
 
-   try:
-      # Execute the query
-      with conn:
-          cur.executemany(query, params_list)
-          logger.info("🗄️✏️🟢 Query executed and committed")
-   except Exception as e:
-      logger.error(f"🗄️✏️ Error executing bulk insert query: {e}\n{traceback.format_exc()}")
+    try:
+        # Execute the query
+        with conn:
+            cur.executemany(query, params_list)
+            logger.info("🗄️✏️🟢 Query executed and committed")
+    except Exception as e:
+        logger.error(f"🗄️✏️ Error executing bulk insert query: {e}\n{traceback.format_exc()}")
 
-   # Close the cursor and connection
-   cur.close()
-   if use_pooling:
-      release_pooling(conn)
-   else:
-      conn.close()
+    # Close the cursor and connection
+    cur.close()
+    if use_pooling:
+        release_pooling(conn)
+    else:
+        conn.close()
 
 
-   #########################################################
-   ## Queries
+#########################################################
+# Queries
 
 
 # Queries
