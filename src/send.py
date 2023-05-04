@@ -39,7 +39,7 @@ def yeet_axes(channel, queue_name):
             url_ids = tuple(row[0] for row in data)
             execute_update(update_query, (url_ids,))
     else:
-        logger.info('No URLs found to send to the queue.')
+        logger.info('No URLs found to send to the Axe queue.')
 
 
 # Selects and sends url(s) to Uppies Queue
@@ -69,7 +69,7 @@ def share_uppies(channel, queue_name):
             update_query = """
                 UPDATE targets.urls
                 SET queued_at_uppies = now()
-                WHERE id = %s;
+                WHERE id IN %s;
             """
             url_ids = tuple(row[0] for row in data)
             execute_update(update_query, (url_ids,))
