@@ -3,7 +3,7 @@ import pika
 from data.select import get_axe_url, get_uppies_url
 from utils.watch import logger
 from utils.auth import rabbit
-from data.update import execute_update
+from data.update import execute_bulk_update
 
 
 # Selects and sends a single url to the queue
@@ -30,14 +30,14 @@ def yeet_axes(channel, queue_name):
                                      delivery_mode = 2, # make message persistent
                                   ))
 
-        # Update the queued_at_axe field for the selected URL IDs
-        update_query = """
-            UPDATE targets.urls
-            SET queued_at_axe = now()
-            WHERE id IN %s;
-        """
-        url_ids = tuple(row[0] for row in data)
-        execute_update(update_query, (url_ids,))
+            # Update the queued_at_axe field for the selected URL IDs
+            update_query = """
+                UPDATE targets.urls
+                SET queued_at_axe = now()
+                WHERE id IN %s;
+            """
+            url_ids = tuple(row[0] for row in data)
+            execute_bulk_update(update_query, (url_ids,))
     else:
         logger.info('No URLs found to send to the queue.')
 
@@ -65,13 +65,13 @@ def share_uppies(channel, queue_name):
                                   properties=pika.BasicProperties(
                                     delivery_mode=2,))
 
-        # Update the queued_at_axe field for the selected URL IDs
-        update_query = """
-            UPDATE targets.urls
-            SET queued_at_uppies = now()
-            WHERE id = %s;
-        """
-        url_ids = tuple(row[0] for row in data)
-        execute_update(update_query, (url_ids,))
+            # Update the queued_at_axe field for the selected URL IDs
+            update_query = """
+                UPDATE targets.urls
+                SET queued_at_uppies = now()
+                WHERE id = %s;
+            """
+            url_ids = tuple(row[0] for row in data)
+            execute_bulk_update(update_query, (url_ids,))
     else:
         logger.info('No URLs found to send to the Uppies queue.')
