@@ -80,7 +80,7 @@ def get_uppies_url(batch_size=10):
             WHERE t.active_main IS TRUE
                 AND t.is_objective IS TRUE
                 AND t.active_scan_uppies IS TRUE
-                AND (t.uppies_at > now() - interval '7 days'
+                AND (t.scanned_at_uppies > now() - interval '7 days'
                 OR t.uppies_at IS NULL)
                 AND (t.queued_at_uppies IS NULL
                     OR t.queued_at_uppies < now() - interval '1 hour')
