@@ -1,77 +1,67 @@
-# 🚀 A11y Uppies Manager 🌟
-_TODO: Change name to matrix__
-Welcome to the A11y Uppies Manager, a creative and powerful solution for managing your uppies! 🎉
+# A11yMatrix
+
+A11yMatrix is a powerful accessibility testing tool that helps developers and testers identify and resolve accessibility issues in their web applications. This repository includes the core functionality, as well as a front-end web application to provide a seamless user experience.
 
 ## 🎯 Overview
-A11y Uppies Manager is designed to handle the communication between the main application and Franklin API, managing the processing of URLs and adjusting the number of workers for optimal performance. 🚀
+
+A11yData processes and monitors web accessibility data, leveraging RabbitMQ for processing and monitoring web pages using tools such as Axe and Uppies.
 
 ## 💡 Features
-- Start and stop uppies processing with API endpoints
-- Automatically adjust the number of workers based on response time
-- Detailed logging with adjustable log levels
-- Dockerized for easy deployment 🐳
+
+- Web accessibility data processing
+- RabbitMQ integration for message processing
+- Monitoring and managing the status of the processing queues
+- Dockerized application for easy deployment
 
 ## 🛠️ Installation
-Prerequisites
-Docker installed on your system
 
-### Steps
-1. Clone the repository:
+Prerequisites:
+- Docker
+- RabbitMQ server with credentials
 
-```bash
-git clone https://github.com/your-repo/a11y-uppies-manager.git
-cd a11y-uppies-manager
-```
+| Docker env var   | Default value         | Description                 |
+|------------------|-----------------------|-----------------------------|
+| APP_PORT         | 8087                  | Application port            |
+| DB_HOST          | postgres              | Database host               |
+| DB_PORT          | 5432                  | Database port               |
+| DB_USER          | a11ydata              | Database user               |
+| DB_PASSWORD      | a11yAllTheThings!     | Database password           |
+| DB_NAME          | a11ydata              | Database name               |
+| LOG_LEVEL        | INFO                  | Logging level               |
 
-2. Build the Docker image:
 
-```bash
-docker build -t a11y-uppies-manager .
-```
-
-3. Run the Docker container:
-
-```bash
-docker run -d -p 8087:8087 --name uppies-manager --env FRANKLIN_URL=http://franklin.whatever --env LOG_LEVEL=INFO a11y-uppies-manager
-```
-Replace http://franklin.whatever with your Franklin API URL and set the LOG_LEVEL to your desired level.
 
 ## 📚 Usage
-### API Endpoints
-- Start uppies processing:
 
-```bash
-POST /uppies/start
-```
+Start and stop the RabbitMQ monitoring using the `/rabbit/ears/start` and `/rabbit/ears/stop` endpoints.
 
-- Stop uppies processing:
+Manage Uppies processing using the `/uppies/start` and `/uppies/stop` endpoints.
 
-```bash
-POST /uppies/stop
-```
+## 📁 Repo Overview
 
-- Get the status of uppies processing:
-
-```bash
-GET /status
-```
-
-## ⚙️ Configuration
-Use the following environment variables to configure the A11y Uppies Manager:
-
-- `APP_PORT`: Port on which the application will run (default: 8087)
-- `FRANKLIN_URL`: URL of the Franklin API
-- `LOG_LEVEL`: Log level for the application (default: INFO)
-
-## 📖 Documentation
-For a detailed explanation of the code and its functionality, check the source files, which are well-documented with inline comments.
-
-TODO: Docs & Such
+- Dockerfile: Docker configuration file for building the application image
+- src/endpoints.py: Flask application with API endpoints
+- src/send.py: Functions for sending messages to the queues
+- src/utils/process.py: Uppies processing script
+- src/utils/yeet_uppies.py: Uppies processing control
+- src/utils/auth.py: Helper function for RabbitMQ authentication
+- src/data/: Contains the database access and query execution logic.
+- access.py: Defines the connection class for managing database connections.
+- select.py: Contains functions for executing select queries.
+- src/utils/: Contains utility functions and configurations.
+- watch.py: Sets up and configures the logger used throughout the application.
+- README.md: This file, which provides an overview of the project and instructions for getting started.
 
 ## 👩‍💻👨‍💻 Contributing
-We love contributions! If you have any ideas or suggestions, please feel free to create an issue or submit a pull request. Let's make the A11y Uppies Manager even better together! 🤝
+
+We love contributions! If you have any ideas or suggestions, please feel free to create an issue or submit a pull request. Let's make A11yData even better together! 🤝
 
 ## 🎉 Final Thoughts
-We hope you enjoy using A11y Uppies Manager as much as we enjoyed building it! Let's make the web more accessible for everyone! 🌐🦾
+
+We hope you enjoy using A11yData as much as we enjoyed building it! Let's work together to make the web a more accessible place for all.
 
 Happy coding! 🎉👩‍💻👨‍💻
+
+## 📄 License
+
+A11yData is released under the GPL-3.0 License.
