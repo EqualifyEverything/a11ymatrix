@@ -36,10 +36,13 @@ CORS(app)
 # Rabbit Monitor - Start
 @app.route('/rabbit/ears/start', methods=['POST'])
 def start_rabbits():
-    # Start the RabbitMQ monitoring
-    rabbit_thread = threading.Thread(target=start_rabbit)
-    rabbit_thread.start()
-    return jsonify({'status': 'started'}), 200
+    if not hasattr(start_rabbits, "rabbit_thread") or not start_rabbits.rabbit_thread.is_alive():
+        # Start the RabbitMQ monitoring
+        start_rabbits.rabbit_thread = threading.Thread(target=start_rabbit)
+        start_rabbits.rabbit_thread.start()
+        return jsonify({'status': 'started'}), 200
+    else:
+        return jsonify({'status': 'already running'}), 200
 
 
 # Rabbit Monitor - Stop
@@ -132,4 +135,9 @@ def metrics():
 if __name__ == '__main__':
     logger.debug('Starting Endpoints')
     app_port = int(os.environ.get('APP_PORT', 8087))
+
+    # Call start_rabbits after 60 seconds
+    timer = threading.Timer(60, start_rabbits)
+    timer.start()
+
     app.run(debug=True, host='0.0.0.0', port=app_port)
