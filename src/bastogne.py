@@ -2,7 +2,7 @@ import os
 import threading
 from utils.watch import logger
 from utils.auth import rabbit
-from utils.send import yeet_axes, throw_axes, crawl_things
+from send import yeet_axes, throw_axes, crawl_things
 
 
 # Function to start axe queue
