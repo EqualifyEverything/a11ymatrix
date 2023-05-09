@@ -2,7 +2,7 @@ import os
 import threading
 from utils.watch import logger
 from utils.auth import rabbit
-from send import yeet_axes, throw_axes, crawl_things
+from send import yeet_axes, share_uppies, crawl_things
 
 
 # Function to start axe queue
@@ -32,7 +32,7 @@ def start_uppies():
     channel, connection = rabbit("launch_uppies")
     while True:
         try:
-            throw_axes(channel, "launch_uppies")
+            share_uppies(channel, "launch_uppies")
         except Exception as e:
             logger.error(f"Error in start_uppies: {e}")
             channel, connection = rabbit("launch_uppies")
