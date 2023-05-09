@@ -116,3 +116,30 @@ def get_uppies_url(batch_size=10):
         select_query, (limit, batch_size), fetchone=False)
     logger.debug(f'Selected URLs: {result}')
     return result
+
+
+# Get next CRAWL url
+def get_crawl_url(batch_size):
+    select_query = """
+        WITH prioritized_urls AS (
+            SELECT t.id, t.url
+            FROM targets.urls t
+            WHERE t.active_main IS TRUE
+                AND t.is_objective IS TRUE
+                AND t.active_crawler IS TRUE
+                AND (t.scanned_at_uppies > now() - interval '7 days'
+                OR t.scanned_at_uppies IS NULL)
+                AND (t.queued_at_crawler IS NULL
+                    OR t.queued_at_crawler < now() - interval '1 hour')
+            ORDER BY t.queued_at_crawler ASC NULLS FIRST
+            LIMIT %s
+        )
+        SELECT * FROM prioritized_urls
+        ORDER BY RANDOM()
+        LIMIT %s;
+    """
+    limit = batch_size * 10
+    result = execute_select(
+        select_query, (limit, batch_size), fetchone=False)
+    logger.debug(f'Selected URLs: {result}')
+    return result

@@ -25,9 +25,9 @@ ENV DB_NAME a11ydata
 
 
 # Logging Level
-ENV LOG_LEVEL INFO
+ENV LOG_LEVEL DEBUG
 
 EXPOSE $APP_PORT
 
 # Run the application
-CMD ["python", "src/endpoints.py"]
+CMD ["python", "src/bastogne.py"]

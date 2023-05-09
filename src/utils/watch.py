@@ -25,6 +25,7 @@ if not logger.hasHandlers():
     # Add the console handler to the logger
     logger.addHandler(ch)
 
+
 def configure_logger():
     # Use the logger from logging_config.py
     global logger
