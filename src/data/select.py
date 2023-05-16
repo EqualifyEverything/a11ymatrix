@@ -71,12 +71,13 @@ def get_axe_url(batch_size=10):
             FROM targets.urls t
             WHERE t.active_main IS TRUE
                 AND t.is_objective IS TRUE
+                AND t.errored is not TRUE
                 AND (t.uppies_code BETWEEN 100
                     AND 299 OR t.uppies_code IS NULL)
                 AND (t.scanned_at_axe > now() - interval '7 days'
                 OR t.scanned_at_axe IS NULL)
                 AND (t.queued_at_axe IS NULL
-                    OR t.queued_at_axe < now() - interval '1 hour')
+                    OR t.queued_at_axe < now() - interval '2 hour')
             ORDER BY t.queued_at_axe ASC NULLS FIRST
             LIMIT %s
         )
@@ -103,7 +104,7 @@ def get_uppies_url(batch_size=10):
                 AND (t.scanned_at_uppies > now() - interval '7 days'
                 OR t.scanned_at_uppies IS NULL)
                 AND (t.queued_at_uppies IS NULL
-                    OR t.queued_at_uppies < now() - interval '1 hour')
+                    OR t.queued_at_uppies < now() - interval '2 hour')
             ORDER BY t.queued_at_uppies ASC NULLS FIRST
             LIMIT %s
         )
@@ -126,11 +127,12 @@ def get_crawl_url(batch_size):
             FROM targets.urls t
             WHERE t.active_main IS TRUE
                 AND t.is_objective IS TRUE
+                AND t.errored is not TRUE
                 AND t.active_crawler IS TRUE
                 AND (t.scanned_at_uppies > now() - interval '7 days'
                 OR t.scanned_at_uppies IS NULL)
                 AND (t.queued_at_crawler IS NULL
-                    OR t.queued_at_crawler < now() - interval '1 hour')
+                    OR t.queued_at_crawler < now() - interval '2 hour')
             ORDER BY t.queued_at_crawler ASC NULLS FIRST
             LIMIT %s
         )
