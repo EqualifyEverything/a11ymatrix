@@ -71,6 +71,7 @@ def get_axe_url(batch_size=10):
             FROM targets.urls t
             WHERE t.active_main IS TRUE
                 AND t.is_objective IS TRUE
+                AND t.active_scan_axe IS TRUE
                 AND t.errored is not TRUE
                 AND (t.uppies_code BETWEEN 100
                     AND 299 OR t.uppies_code IS NULL)
