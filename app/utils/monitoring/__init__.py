@@ -1,19 +1,18 @@
 # app/utils/monitoring/__init__.py
-
-from .logger import logger
-
-"""
-from .pyroscope import configure_pyroscope
-
+import os
 from .sentry import configure_sentry
+from .pyroscope import configure_pyroscope
+from .logging import logger
 
-from .prometheus import configure_prometheus
+def which_extras():
+    # Check if SENTRY_DSN environment variable has a value
+    if os.getenv("SENTRY_DSN"):
+        configure_sentry()
+        logger.info('Sentry Configured')
 
-def start_monitoring(app):
-    configure_sentry()
-    configure_pyroscope()
-    configure_prometheus(app)
-    """
-
+    # Check if PYROSCOPE_API_KEY environment variable has a value
+    if os.getenv("PYROSCOPE_API_KEY"):
+        configure_pyroscope()
+        logger.info('Pyroscope Configured')
 
 
