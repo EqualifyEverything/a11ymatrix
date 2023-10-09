@@ -1,19 +1,15 @@
-# execute_query.py
-# Relative Path: app/api/database/utils/execute_query.py
-from sqlalchemy import text
+# app/services/postgres/execute_select.py
+import psycopg2
+import os
 
-
-def row2dict(row):
-    return {column: str(value) for column, value in zip(row.keys(), row)}
-
-def execute_sql_from_file(conn, filename, domain):
+def execute_sql_from_file(conn: psycopg2.extensions.connection, filename: str, domain: str):
     with open(filename, 'r') as fd:
         sql_file = fd.read()
 
     formatted_sql_file = sql_file % domain
 
-    result_proxy = conn.execute(text(formatted_sql_file))
-
-    result = [dict(row) for row in result_proxy.fetchall()]
+    with conn.cursor() as cur:
+        cur.execute(formatted_sql_file)
+        result = [dict((cur.description[i][0], value) for i, value in enumerate(row)) for row in cur.fetchall()]
 
     return result
