@@ -1,5 +1,5 @@
 # Rabbit Farm
-Selects data and sends to RabbitMQ
+Cultivates data from the database and sends them hopping to RabbitMQ queues, just like a bustling rabbit farm 🐰🌾.
 
 
 
