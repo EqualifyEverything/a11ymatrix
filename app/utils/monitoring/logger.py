@@ -15,8 +15,7 @@ from logging.handlers import TimedRotatingFileHandler
 import os
 
 logger_name = "A11yLogger"
-
-Get log level from env var LOG_LEVEL
+os.environ.get("LOG_LEVEL", "INFO")
 level = 'DEBUG'
 
 

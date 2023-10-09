@@ -1,1 +1,1 @@
-from .auth import get_rabbit_channel
+from .send import send_message

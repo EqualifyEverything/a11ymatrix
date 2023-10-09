@@ -1,3 +1,4 @@
+# app/services/postgres/auth.py
 """Module for managing PostgreSQL database connections.
 
 This module provides a class for managing PostgreSQL database connections
